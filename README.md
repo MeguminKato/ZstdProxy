@@ -1,0 +1,32 @@
+# ZstdProxy 代理
+
+### 1. 原理
+    使用开源Zstd通道将tcp通道再封装成zstd流通道
+### 2. 实现依赖
+    使用github.com/klauspost/compress/zstd作为go端依赖
+    使用github.luben:zstd-jni:1.5.5-10作为mod端依赖
+### 3.压缩率
+    基本遵循开源实现，压缩后理论能减少60~90%的网络带宽
+    传输地图,物品栏等NBT多的内容时可以显著减少网络占用
+### 4.网络拓扑
+    MC客户端(zstdproxy) <-> FRP/HaProxy Server(可能存在) <-> FRP Client(可能存在) <-> GoZstdServer <-> MC服务端 
+
+### 5.使用
+    GoZstdServer.exe参数说明
+    -mode server        固定为server
+    -l 0.0.0.0:9000     监听IP和端口
+    -r 127.0.0.1:25565  MC服务器的监听端口
+    -mc 20              单个IP最大同时连接数
+    -mr 30              洪水攻击请求数量阈值
+    -wd 10s             洪水攻击防御窗口期(示例:1s 10m 8h)
+    -bd 30m             触发防御功能后的封禁时长
+
+    注:如果窗口期和连接数设置不当,在客户端大量刷新MOTD的情况下有可能会被封
+
+### 6.版权
+    本软件免费发布，禁止以任何形式倒卖或者收取服务费
+### 7.注意事项及其他
+    如使用FRP,haproxy等转发软件的,请打开proxyprotocolv2协议，否则IP获取不正确可能导致封禁整条线路
+
+
+    如发现问题,可提交issue
